@@ -21,7 +21,17 @@
         });
 
         $("button[name=italic]").click(function() {
-        	$("p").suede("listify");
+        	$("p").suede("wrap", "em");
+           return false;
+        });
+
+        $("button[name=listify]").click(function() {
+          $("p").suede("listify");
+           return false;
+        });
+
+        $("button[name=unlistify]").click(function() {
+          $("p").suede("unlistify");
            return false;
         });
         
@@ -49,6 +59,8 @@
   	<img src="../img/elephant.jpg" />
   	<button name="bold" href="">Bold</button>
   	<button name="italic" href="">Italic</button>
+  	<button name="listify" href="">listify</button>
+  	<button name="unlistify" href="">unlistify</button>
   	<div id="debug">
   	
   	</div>
