@@ -1,72 +1,89 @@
 (function($) {
 	$.widget("ui.suede", {
+		
 		_init: function() {
-			var self = this, o = this.options;
+			var self = this
+			var o = this.options;
 			this.element.attr({contenteditable: true});
 			
 			this.element.keypress(function(e) {
-				console.log("Key pressed");
-			  switch(e.keyCode) {
-			  	case $.ui.keyCode.ENTER:
-			  		console.log("return pressed");
-			  		
-						//var selection = self._getSelection();
-						console.log("Event target: " + e.target);
-						/**
-						 * When hitting return inside an <li> a new <li> is added after the current one.
-						 * The content of the current <li> is split at caret position. 
-						 */
-						if(e.target.tagName == "LI") {
-							e.preventDefault();
-							console.log("We are in an LI");
-							
-							var newItem = $("<li></li>").insertAfter(e.target);
-							
-							var selection = self._getSelection();
-							var text = $(e.target).text();
-							
-							$(e.target).text(text.substring(0, selection.startOffset));
-							newItem.text(text.substring(selection.startOffset));
-							
-							console.log("Selection: " + selection);
-							console.log("Selection start: " + selection.startOffset);
-							
-							newItem.suede();
-							newItem.focus();
-						}
-						/**
-						 * When hitting return inside a <p> a new <p> is added after the current one.
-						 * The content of the current <p> is split at caret position. 
-						 */
-						else if(e.target.tagName == "P") {
-							e.preventDefault();
-							console.log("We are in an P");
-							
-							var newItem = $("<p></p>").insertAfter(e.target);
-							newItem.execCommand("Bold",bool,value);
-							var selection = self._getSelection();
-							var text = $(e.target).text();
-							
-							$(e.target).text(text.substring(0, selection.startOffset));
-							newItem.text(text.substring(selection.startOffset));
-							
-							console.log("Selection: " + selection);
-							console.log("Selection start: " + selection.startOffset);
-							
-							newItem.suede();
-							newItem.focus();
-						}
-						
-						
-			  		break;
-			  		
-			  		case $.ui.keyCode.UP:
-			  			console.log("Arrow up pressed");
-			  			$(e.target).next("li").focus();
-			  			console.log();
-			  		break;
-			  	}	
+				self._handleKeyPress(e);
 			});
+			
+			this.element.bind("contextmenu", function(e) {
+				console.log("Context menu");
+        return false;
+			});
+			
+		}
+	
+		,_handleKeyPress: function(e) {
+			var self = this
+			var o = this.options;
+			
+			console.log("Key pressed");
+			
+		  switch(e.keyCode) {
+		  	case $.ui.keyCode.ENTER:
+		  		console.log("return pressed");
+		  		
+					//var selection = self._getSelection();
+					console.log("Event target: " + e.target);
+					/**
+					 * When hitting return inside an <li> a new <li> is added after the current one.
+					 * The content of the current <li> is split at caret position. 
+					 */
+					if(e.target.tagName == "LI") {
+						e.preventDefault();
+						console.log("We are in an LI");
+						
+						var newItem = $("<li></li>").insertAfter(e.target);
+						
+						var selection = self._getSelection();
+						var text = $(e.target).text();
+						
+						$(e.target).text(text.substring(0, selection.startOffset));
+						newItem.text(text.substring(selection.startOffset));
+						
+						console.log("Selection: " + selection);
+						console.log("Selection start: " + selection.startOffset);
+						
+						newItem.suede();
+						newItem.focus();
+					}
+					/**
+					 * When hitting return inside a <p> a new <p> is added after the current one.
+					 * The content of the current <p> is split at caret position. 
+					 */
+					else if(e.target.tagName == "P") {
+						e.preventDefault();
+						console.log("We are in an P");
+						
+						var newItem = $("<p></p>").insertAfter(e.target);
+						newItem.execCommand("Bold",bool,value);
+						var selection = self._getSelection();
+						var text = $(e.target).text();
+						
+						$(e.target).text(text.substring(0, selection.startOffset));
+						newItem.text(text.substring(selection.startOffset));
+						
+						console.log("Selection: " + selection);
+						console.log("Selection start: " + selection.startOffset);
+						
+						newItem.suede();
+						newItem.focus();
+					}
+					
+					
+		  		break;
+		  		
+		  		case $.ui.keyCode.UP:
+		  			console.log("Arrow up pressed");
+		  			$(e.target).next("li").focus();
+		  			console.log();
+		  		break;
+		  	}	
+
 		}
 
 		,_getSelection: function() {
@@ -107,15 +124,17 @@
 				console.log("We are in the same container");
 				var contents = container.html();
 				var selected = contents.substring(range.startOffset, range.endOffset);
-				
-				var wrapped = $(selected).wrap("<b>");
-				console.log(contents);
-	       		
-				//var wrapper = $("<span style='color: red'>" + selected + "</span>");
+				console.log("Selected text: " + selected);
+				var prefix = contents.substring(0, range.startOffset);
+				var postfix = contents.substring(range.endOffset);
+				var wrapped = $("<" + wrapper + "/>").text(selected);
+				console.log("Wrapped: " + wrapped);
+	      console.log("Starts at: " + prefix);
+	      console.log("Ends at: " + postfix);
 				container.empty();
-				container.append(contents.substring(0, range.startOffset));
-				container.append("ffdsfs");
-				container.append(contents.substring(range.endOffset));
+				container.append(prefix);
+				container.append(wrapped);
+				container.append(postfix);
 
 				return wrapper;
 			}
