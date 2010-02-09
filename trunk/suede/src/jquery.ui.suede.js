@@ -11,24 +11,58 @@
 			});
 			
 			this.element.bind("contextmenu", function(e) {
-				console.log("Context menu");
+				var menu = $("body").data("suede");
+				if(!menu) {
+					console.log("Context menu");
+					var menu = $("<div/>", {"class": "contextual"}).appendTo("body");
+					$("body").data("suede", menu);
+				}
+				menu.empty();
+				menu.html("<ul><li>Bold</li><li>Italic</li><li>fsdfdsf</li><li>fsdfdsf</li></ul>");
         return false;
 			});
 			
 		}
 	
+		/**
+		 * Get the key code from the event for all platforms
+		 */
+	 ,_getKeyCode: function(e) {
+			var code;
+			if (!e) var e = window.event;
+			if (e.keyCode) code = e.keyCode;
+			else if (e.which) code = e.which;
+			return code;
+		}
+
+
+
+
+	
 		,_handleKeyPress: function(e) {
-			var self = this
+			
+			var self = this;
 			var o = this.options;
 			
-			console.log("Key pressed");
 			
-		  switch(e.keyCode) {
+			if(e.metaKey) {
+				e.preventDefault();
+				console.log("CMD pressed");
+				console.log("Key pressed: " + (e.metaKey ? 'cmd-' : '') + self._getKeyCode(e));
+			}
+			
+			
+		  switch(self._getKeyCode(e)) {
+		  	case 231:
+		  		if(e.metaKey) {
+		  			e.preventDefault();
+		  			console.log("Cmd-b pressed");
+		  			self.wrap("strong");
+		  		}
+		  		break;
+		  	
 		  	case $.ui.keyCode.ENTER:
 		  		console.log("return pressed");
-		  		
-					//var selection = self._getSelection();
-					console.log("Event target: " + e.target);
 					/**
 					 * When hitting return inside an <li> a new <li> is added after the current one.
 					 * The content of the current <li> is split at caret position. 
@@ -42,14 +76,18 @@
 						var selection = self._getSelection();
 						var text = $(e.target).text();
 						
-						$(e.target).text(text.substring(0, selection.startOffset));
-						newItem.text(text.substring(selection.startOffset));
+						var parts = [];
+						parts[0] = text.substring(0, selection.startOffset);
+						parts[1] = text.substring(selection.startOffset);
+						//var oldText = 
+						//var newLi = text.substring(selection.startOffset);
 						
-						console.log("Selection: " + selection);
-						console.log("Selection start: " + selection.startOffset);
+						$(e.target).text(parts[0]);
+						newItem.text(parts[1]);
 						
 						newItem.suede();
 						newItem.focus();
+						self._trigger("change");
 					}
 					/**
 					 * When hitting return inside a <p> a new <p> is added after the current one.
@@ -60,18 +98,22 @@
 						console.log("We are in an P");
 						
 						var newItem = $("<p></p>").insertAfter(e.target);
-						newItem.execCommand("Bold",bool,value);
 						var selection = self._getSelection();
 						var text = $(e.target).text();
 						
-						$(e.target).text(text.substring(0, selection.startOffset));
-						newItem.text(text.substring(selection.startOffset));
+						var parts = [];
+						parts[0] = text.substring(0, selection.startOffset);
+						parts[1] = text.substring(selection.startOffset);
+						
+						$(e.target).text(parts[0]);
+						newItem.text(parts[1]);
 						
 						console.log("Selection: " + selection);
 						console.log("Selection start: " + selection.startOffset);
 						
 						newItem.suede();
 						newItem.focus();
+						self._trigger("change");
 					}
 					
 					
@@ -111,7 +153,8 @@
 			return this;
 		}
 
-		,wrap: function(wrapper) {
+		,wrap: function(wrapper, attributes) {
+			var self = this;
 			var range = this._getSelection();
 			console.log("Cursor is at: " + range.startOffset);
 			console.log("Wrapping selection in: " + wrapper);	
@@ -127,7 +170,7 @@
 				console.log("Selected text: " + selected);
 				var prefix = contents.substring(0, range.startOffset);
 				var postfix = contents.substring(range.endOffset);
-				var wrapped = $("<" + wrapper + "/>").text(selected);
+				var wrapped = $("<" + wrapper + "/>", attributes).text(selected);
 				console.log("Wrapped: " + wrapped);
 	      console.log("Starts at: " + prefix);
 	      console.log("Ends at: " + postfix);
@@ -136,6 +179,7 @@
 				container.append(wrapped);
 				container.append(postfix);
 
+				self._trigger("change");
 				return wrapper;
 			}
 		}
@@ -145,6 +189,7 @@
 		version: "@VERSION",
 		defaults: {
 			value: 0
+			,change:function() {}
 		}
 	});
 })(jQuery);
