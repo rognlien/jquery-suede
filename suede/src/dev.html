@@ -5,23 +5,59 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	  <title>jQuery suede</title>
 	  	<link rel="stylesheet" href="../css/suede.css"/>
+	  	<style type="text/css">
+	  	  .contextual {
+	  	    font-family: 'Lucida Grande', Geneva;
+	  	    font-size: 14px;
+          width: 200px;
+          padding: 10px;
+  border: 1px solid #bbb;
+  border-top-color: #dcdcdc;
+  border-right-color: #b2b2b2;
+  border-left-color: #b2b2b2;
+  border-bottom-color: #838383;
+  background-color: #fff;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  box-shadow: 2px 10px 10px #b3b3b3;
+  -moz-box-shadow: #b3b3b3 2px 10px 10px;
+  -webkit-box-shadow: 0px 8px 10px #b3b3b3;
+
+}
+
+.contextual ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+	  	
+	  	</style>
 	  
-    	<script src="../jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+    	<script src="../jquery/jquery-1.4.1.min.js" type="text/javascript"></script>
     	<script src="../jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
     	
 	  	<script src="jquery.ui.suede.js" type="text/javascript"></script>
 		<script type="text/javascript">
 		jQuery(function($) {
-        	$("h1,li,p").suede();
+        	$("h1,li,p").suede({change:function() {
+        		$("pre.source").empty();
+        		$("pre.source").append(document.createTextNode($("div.content").html()));
+          	}
+        	});
 
         	
         $("button[name=bold]").click(function() {
-        	$("p").suede("wrap", "strong");
+        	$("p").suede("wrap", "strong", {});
            return false;
         });
 
         $("button[name=italic]").click(function() {
-        	$("p").suede("wrap", "em");
+        	$("p").suede("wrap", "em", {});
+           return false;
+        });
+
+        $("button[name=link]").click(function() {
+          $("p").suede("wrap", "a", {"href":"#"});
            return false;
         });
 
@@ -34,6 +70,11 @@
           $("p").suede("unlistify");
            return false;
         });
+
+        $("button[name=source]").click(function() {
+          $("pre.source").append(document.createTextNode($("div.content").html()));
+           return false;
+        });
         
       });
 		function debug(msg) {
@@ -42,6 +83,7 @@
     </script>
   </head>
   <body>
+    <div class="content">
   	<h1>A header</h1>
   	<h1>Another header</h1>
   	<ul>
@@ -56,11 +98,21 @@
   	</ol>
   	
   	<p>Some text in a paragraph</p>
-  	<img src="../img/elephant.jpg" />
+  	
+  	<p>More text in another paragraph</p>
+  	
+  	</div>
+  	
   	<button name="bold" href="">Bold</button>
   	<button name="italic" href="">Italic</button>
+  	<button name="link" href="">Link</button>
   	<button name="listify" href="">listify</button>
   	<button name="unlistify" href="">unlistify</button>
+  	<button name="source" href="">Source</button>
+  	<code><pre class="source">
+  	
+  	</pre>
+  	</code>
   	<div id="debug">
   	
   	</div>
